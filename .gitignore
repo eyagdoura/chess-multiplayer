@@ -1,0 +1,13 @@
+# Angular
+node_modules/
+dist/
+.angular/
+
+# Spring Boot
+target/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
