@@ -13,10 +13,7 @@ import java.util.List;
 public class GameController {
 
     private final GameService service;
-    @GetMapping("/{id}")
-    public Game getGame(@PathVariable Long id) {
-        return gameService.getGame(id);
-    }
+
     @GetMapping("/{id}/moves")
     public List<Move> history(@PathVariable Long id) {
         return service.history(id);
