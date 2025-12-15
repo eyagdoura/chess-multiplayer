@@ -1,25 +1,19 @@
-<h1 class="title">Hall d'entrée</h1>
+<h2>Lobby – Joueurs en ligne</h2>
 
-<div class="card">
-    <h2>Joueurs en ligne</h2>
+<div class="lobby-container">
 
-    <div class="user-row" *ngFor="let u of users">
-        <span>{{ u.username }}</span>
+    <div *ngIf="onlineUsers.length === 0" class="empty">
+        Aucun joueur en ligne
+    </div>
 
-        <button *ngIf="u.username !== user.username" (click)="invite(u.username)" class="invite-btn">
+    <div class="user-card" *ngFor="let user of onlineUsers">
+        <span class="username">
+            {{ user.username }}
+        </span>
+
+        <button class="invite-btn" (click)="invite(user.id)">
             Inviter
         </button>
     </div>
-</div>
 
-
-<div class="invite-popup" *ngIf="invitation">
-    <p>
-        Invitation de <strong>{{ invitation.from }}</strong>
-    </p>
-
-    <div class="actions">
-        <button class="accept" (click)="accept()">Accepter</button>
-        <button class="refuse" (click)="refuse()">Refuser</button>
-    </div>
 </div>

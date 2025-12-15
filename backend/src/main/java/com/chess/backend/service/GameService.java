@@ -1,53 +1,34 @@
 package com.chess.backend.service;
 
-import com.chess.backend.entity.Game;
-import com.chess.backend.entity.Move;
-import com.chess.backend.repository.GameRepository;
-import com.chess.backend.repository.MoveRepository;
+import com.chess.backend.entity.*;
+import com.chess.backend.repository.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+
 @Service
+@RequiredArgsConstructor
 public class GameService {
 
     private final GameRepository gameRepo;
     private final MoveRepository moveRepo;
 
-    public GameService(GameRepository gameRepo, MoveRepository moveRepo) {
-        this.gameRepo = gameRepo;
-        this.moveRepo = moveRepo;
+    public Game create(Long p1, Long p2) {
+        Game g = new Game();
+        g.setWhitePlayerId(p1);
+        g.setBlackPlayerId(p2);
+        g.setStatus("ONGOING");
+        return gameRepo.save(g);
     }
 
-    public Game createGame(String white, String black) {
-        Game game = new Game();
-        game.setWhitePlayer(white);
-        game.setBlackPlayer(black);
-        game.setFinished(false);
-        return gameRepo.save(game);
+    public Move saveMove(Move m) {
+        return moveRepo.save(m);
     }
-
-    public Move saveMove(Long gameId, String from, String to, String player) {
-        Game game = gameRepo.findById(gameId).orElseThrow();
-
-        int moveNumber = moveRepo.findByGame_IdOrderByMoveNumber(gameId).size() + 1;
-
-        Move move = new Move();
-        move.setGame(game);
-        move.setFromPosition(from);
-        move.setToPosition(to);
-        move.setPlayer(player);
-        move.setMoveNumber(moveNumber);
-
-        return moveRepo.save(move);
-    }
-
-    public List<Move> getMoves(Long gameId) {
-        return moveRepo.findByGame_IdOrderByMoveNumber(gameId);
-    }
-
-    public Game getGame(Long gameId) {
-        return gameRepo.findById(gameId)
+    public Game getGame(Long id) {
+        return gameRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Game not found"));
     }
-
+    public List<Move> history(Long gameId) {
+        return moveRepo.findByGameIdOrderByMoveNumber(gameId);
+    }
 }

@@ -5,11 +5,14 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class UserService {
 
-  private api = 'http://localhost:8080/users';
+
 
   constructor(private http: HttpClient) { }
 
-  getOnlineUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.api}/online`);
+  getOnlineUsers() {
+    return this.http.get<string[]>(
+      'http://localhost:8080/api/users/online'
+    );
   }
+
 }

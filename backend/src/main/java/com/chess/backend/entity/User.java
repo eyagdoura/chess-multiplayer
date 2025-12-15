@@ -1,9 +1,12 @@
 package com.chess.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
-@Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -16,15 +19,4 @@ public class User {
     private String password;
 
     private boolean online;
-
-    // getters & setters
-    public Long getId() { return id; }
-    public String getUsername() { return username; }
-    public String getPassword() { return password; }
-    public boolean isOnline() { return online; }
-
-    public void setId(Long id) { this.id = id; }
-    public void setUsername(String username) { this.username = username; }
-    public void setPassword(String password) { this.password = password; }
-    public void setOnline(boolean online) { this.online = online; }
 }

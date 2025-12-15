@@ -1,28 +1,42 @@
 .auth-container {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 320px;
+    margin: 100px auto;
+    padding: 24px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 
-.card {
-    background: var(--card);
-    width: 360px;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, .1);
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
 }
 
-.card h1 {
-    margin-bottom: 5px;
+button {
+    width: 100%;
+    padding: 10px;
+    background: #2196f3;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
-.card p {
-    margin-bottom: 20px;
-    color: #475569;
+button:hover {
+    background: #1976d2;
+}
+
+.error {
+    color: red;
+    margin-top: 8px;
 }
 
 .link {
-    margin-top: 15px;
-    font-size: 14px;
+    margin-top: 14px;
+    color: #2196f3;
+    cursor: pointer;
 }

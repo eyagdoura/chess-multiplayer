@@ -1,24 +1,27 @@
 package com.chess.backend.controller;
 
-import com.chess.backend.entity.User;
-import com.chess.backend.service.UserService;
+import com.chess.backend.service.PresenceService;
+import com.chess.backend.websocket.ChessWebSocketHandler;
+
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Set;
 
 @RestController
-@RequestMapping("/users")
-@CrossOrigin
+@RequestMapping("/api/users")
+@CrossOrigin("*")
 public class UserController {
 
-    private final UserService service;
+    private final ChessWebSocketHandler wsHandler;
+    private final PresenceService presenceService;
 
-    public UserController(UserService service) {
-        this.service = service;
+    public UserController(ChessWebSocketHandler wsHandler, PresenceService presenceService) {
+        this.wsHandler = wsHandler;
+        this.presenceService = presenceService;
     }
 
     @GetMapping("/online")
-    public List<User> onlineUsers() {
-        return service.getOnlineUsers();
+    public Set<String> onlineUsers() {
+        return presenceService.getOnlineUsers();
     }
 }

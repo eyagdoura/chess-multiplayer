@@ -8,14 +8,14 @@ import java.util.List;
 
 @Service
 public class UserService {
-
     private final UserRepository repo;
+    public UserService(UserRepository repo){ this.repo = repo; }
 
-    public UserService(UserRepository repo) {
-        this.repo = repo;
-    }
-
-    public List<User> getOnlineUsers() {
-        return repo.findByOnlineTrue();
+    public User register(User u){ return repo.save(u); }
+    public User login(String u,String p){
+        return repo.findByUsername(u)
+                .filter(x -> x.getPassword().equals(p))
+                .orElseThrow();
     }
 }
+

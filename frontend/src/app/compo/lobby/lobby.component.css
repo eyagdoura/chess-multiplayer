@@ -1,63 +1,39 @@
-.title {
-    font-size: 28px;
-    margin-bottom: 20px;
+.lobby-container {
+    max-width: 500px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    max-width: 600px;
-}
-
-.user-row {
+.user-card {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #e5e7eb;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.username {
+    font-weight: 600;
 }
 
 .invite-btn {
-    background: #2563eb;
+    background-color: #1976d2;
     color: white;
     border: none;
-    padding: 6px 14px;
-    border-radius: 6px;
+    padding: 6px 12px;
+    border-radius: 4px;
     cursor: pointer;
 }
 
 .invite-btn:hover {
-    background: #1e40af;
+    background-color: #125aa3;
 }
 
-.invite-popup {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: white;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.accept {
-    background: #16a34a;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-}
-
-.refuse {
-    background: #dc2626;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
+.empty {
+    text-align: center;
+    color: #777;
 }

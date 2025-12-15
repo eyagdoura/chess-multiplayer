@@ -1,16 +1,22 @@
 package com.chess.backend.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "invitations")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Invitation {
 
-    private String from;
-    private String to;
-    private String status;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public String getFrom() { return from; }
-    public String getTo() { return to; }
-    public String getStatus() { return status; }
+    private Long fromUserId;
+    private Long toUserId;
 
-    public void setFrom(String from) { this.from = from; }
-    public void setTo(String to) { this.to = to; }
-    public void setStatus(String status) { this.status = status; }
+    private String status; // INVITE / ACCEPT / REFUSE
 }

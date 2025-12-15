@@ -1,7 +1,15 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Inject
+} from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { UserService } from '../../services/user.service';
-import { WebSocketService } from '../../services/websocket.service';
+import { Router } from '@angular/router';
+import { PLATFORM_ID } from '@angular/core';
+
+import { AuthService } from '../../services/auth.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-lobby',
@@ -10,65 +18,78 @@ import { WebSocketService } from '../../services/websocket.service';
   templateUrl: './lobby.component.html',
   styleUrls: ['./lobby.component.css']
 })
-export class LobbyComponent implements OnInit {
+export class LobbyComponent implements OnInit, OnDestroy {
 
-  user!: { username: string };
-  users: { username: string }[] = [];
-  invitation: { from: string } | null = null;
-  isBrowser = false;
+  currentUser: any = null;
+  onlineUsers: any[] = [];
 
   constructor(
-    private userService: UserService,
-    private ws: WebSocketService,
+    private auth: AuthService,
+    private ws: WebsocketService,
+    private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngOnInit(): void {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-    if (!this.isBrowser) return;
 
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) return;
+    if (isPlatformBrowser(this.platformId)) {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        this.currentUser = JSON.parse(storedUser);
+      }
+    }
 
-    this.user = JSON.parse(storedUser);
 
-    this.loadOnlineUsers();
+    if (!this.currentUser) {
+      this.router.navigate(['/']);
+      return;
+    }
 
-    this.ws.connect(this.user.username, (data: any) => {
-      this.handleSocketMessage(data);
+    // 👥 Charger utilisateurs en ligne
+    this.auth.online().subscribe(users => {
+      this.onlineUsers = users.filter(
+        u => u.id !== this.currentUser.id
+      );
+    });
+
+
+    this.ws.connectInvitations(
+      this.currentUser.username,
+      msg => this.handleInvitation(msg)
+    );
+  }
+
+  invite(userId: number): void {
+    this.ws.sendInvitation({
+      fromUserId: this.currentUser.id,
+      toUserId: userId,
+      status: 'INVITE'
     });
   }
 
-  invite(username: string): void {
-    this.ws.invite(this.user.username, username);
-  }
+  private handleInvitation(msg: any): void {
 
-  accept(): void {
-    this.ws.respond(this.user.username, this.invitation!.from, true);
-    this.invitation = null;
-  }
 
-  refuse(): void {
-    this.ws.respond(this.user.username, this.invitation!.from, false);
-    this.invitation = null;
-  }
+    if (
+      msg.status === 'INVITE' &&
+      msg.toUserId === this.currentUser.id
+    ) {
+      const accepted = confirm(
+        `Invitation reçue. Accepter la partie ?`
+      );
 
-  private loadOnlineUsers(): void {
-    this.userService.getOnlineUsers()
-      .subscribe(users => this.users = users);
-  }
-
-  private handleSocketMessage(data: any): void {
-    if (data.type === 'INVITE') {
-      this.invitation = { from: data.from };
+      msg.status = accepted ? 'ACCEPT' : 'REFUSE';
+      this.ws.sendInvitation(msg);
     }
 
-    if (data.type === 'RESPONSE') {
-      if (data.accepted) {
-        alert(`${data.from} a accepté votre invitation`);
-      } else {
-        alert(`${data.from} a refusé votre invitation`);
-      }
+
+    if (msg.status?.startsWith('GAME_CREATED')) {
+      const gameId = msg.status.split(':')[1];
+      this.router.navigate(['/game', gameId]);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.ws.disconnectInvitations();
   }
 }

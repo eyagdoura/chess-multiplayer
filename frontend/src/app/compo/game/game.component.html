@@ -1,0 +1,27 @@
+<div class="layout">
+
+    <div>
+        <h2>Partie en cours</h2>
+        <div class="turn">
+            Tour : <b>{{ turn === 'W' ? 'Blancs' : 'Noirs' }}</b>
+        </div>
+
+        <div class="board">
+            <div *ngFor="let s of board; let i = index" class="square" [class.dark]="dark(i)"
+                [class.selected]="i === selected" [class.possible]="possibleMoves.includes(i)"
+                (click)="selectSquare(i)">
+                {{ pieceSymbol(board[i]) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="history">
+        <h3>Historique</h3>
+        <ul>
+            <li *ngFor="let h of history; let i = index">
+                {{ i + 1 }}. {{ h }}
+            </li>
+        </ul>
+    </div>
+
+</div>

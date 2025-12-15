@@ -1,46 +1,141 @@
 import { Injectable } from '@angular/core';
+import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 
-@Injectable({ providedIn: 'root' })
-export class WebSocketService {
+@Injectable({
+  providedIn: 'root'
+})
+export class WebsocketService {
 
-  private socket!: WebSocket;
+  private client!: Client;
+  private connected = false;
 
-  connect(username: string, onInvite: (data: any) => void) {
-    this.socket = new WebSocket(`ws://localhost:8080/ws?username=${username}`);
+  private gameSubscription?: StompSubscription;
+  private invitationSubscription?: StompSubscription;
 
-    this.socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      onInvite(data);
+
+  private initClient(connectHeaders: any = {}): void {
+    if (this.client && this.connected) {
+      return;
+    }
+    this.client = new Client({
+      brokerURL: 'ws://localhost:8080/ws',
+      reconnectDelay: 0
+    });
+
+
+
+    this.client.onConnect = () => {
+      console.log('✅ STOMP connected');
+      this.connected = true;
     };
 
-    this.socket.onerror = (err) => {
-      console.error('WebSocket error', err);
+    this.client.onDisconnect = () => {
+      console.log('🔴 STOMP disconnected');
+      this.connected = false;
     };
+
+    this.client.onStompError = frame => {
+      console.error('❌ STOMP error:', frame.headers['message']);
+      console.error('Details:', frame.body);
+    };
+
+    this.client.activate();
   }
 
 
+  connectGame(
+    gameId: number,
+    username: string,
+    onMove: (move: any) => void
+  ): void {
 
-  disconnect() {
-    if (this.socket) {
-      this.socket.close();
+    this.initClient({ username });
+
+    const waitForConnection = setInterval(() => {
+      if (this.connected) {
+        clearInterval(waitForConnection);
+
+        this.gameSubscription = this.client.subscribe(
+          `/topic/game/${gameId}`,
+          (msg: IMessage) => {
+            onMove(JSON.parse(msg.body));
+          }
+        );
+
+        console.log(`♟ Subscribed to game ${gameId}`);
+      }
+    }, 100);
+  }
+
+  sendMove(gameId: number, move: any): void {
+    if (!this.connected) {
+      console.warn('⚠ Cannot send move: STOMP not connected');
+      return;
+    }
+
+    this.client.publish({
+      destination: `/app/game/${gameId}/move`,
+      body: JSON.stringify(move)
+    });
+  }
+
+  disconnectGame(): void {
+    this.gameSubscription?.unsubscribe();
+  }
+
+
+  connectInvitations(
+    username: string,
+    onMessage: (invite: any) => void
+  ): void {
+
+    this.initClient({ username });
+
+    const waitForConnection = setInterval(() => {
+      if (this.connected) {
+        clearInterval(waitForConnection);
+
+        this.invitationSubscription = this.client.subscribe(
+          '/topic/invitations',
+          (msg: IMessage) => {
+            onMessage(JSON.parse(msg.body));
+          }
+        );
+
+        console.log('📨 Subscribed to invitations');
+      }
+    }, 100);
+  }
+
+  sendInvitation(invitation: {
+    fromUserId: number;
+    toUserId: number;
+    status: 'INVITE' | 'ACCEPT' | 'REFUSE';
+  }): void {
+
+    if (!this.connected) {
+      console.warn('⚠ Cannot send invitation: STOMP not connected');
+      return;
+    }
+
+    this.client.publish({
+      destination: '/app/invite',
+      body: JSON.stringify(invitation)
+    });
+  }
+
+  disconnectInvitations(): void {
+    this.invitationSubscription?.unsubscribe();
+  }
+
+
+  disconnect(): void {
+    this.gameSubscription?.unsubscribe();
+    this.invitationSubscription?.unsubscribe();
+
+    if (this.client && this.connected) {
+      this.client.deactivate();
+      this.connected = false;
     }
   }
-
-  invite(from: string, to: string) {
-    this.socket.send(JSON.stringify({
-      type: 'INVITE',
-      from,
-      to
-    }));
-  }
-
-  respond(from: string, to: string, accepted: boolean) {
-    this.socket.send(JSON.stringify({
-      type: 'RESPONSE',
-      from,
-      to,
-      accepted
-    }));
-  }
-
 }

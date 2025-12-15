@@ -1,19 +1,17 @@
 <div class="auth-container">
-    <div class="card">
-        <h1>Chess Online</h1>
-        <p>Sign in to continue</p>
 
-        <label>Username</label>
-        <input [(ngModel)]="username">
+    <h2>Connexion</h2>
 
-        <label>Password</label>
-        <input type="password" [(ngModel)]="password">
+    <input type="text" placeholder="Nom d'utilisateur" [(ngModel)]="username" />
 
-        <button (click)="login()">Login</button>
+    <input type="password" placeholder="Mot de passe" [(ngModel)]="password" />
 
-        <p class="link">
-            No account?
-            <a routerLink="/register">Create one</a>
-        </p>
-    </div>
+    <button (click)="login()">Se connecter</button>
+
+    <div class="error" *ngIf="error">{{ error }}</div>
+
+    <p class="link" (click)="goToRegister()">
+        Créer un compte
+    </p>
+
 </div>
