@@ -16,8 +16,6 @@ public class UserService {
     }
 
     public List<User> getOnlineUsers() {
-        return repo.findAll().stream()
-                .filter(User::isOnline)
-                .toList();
+        return repo.findByOnlineTrue();
     }
 }
