@@ -1,0 +1,25 @@
+<h1 class="title">Hall d'entrée</h1>
+
+<div class="card">
+    <h2>Joueurs en ligne</h2>
+
+    <div class="user-row" *ngFor="let u of users">
+        <span>{{ u.username }}</span>
+
+        <button *ngIf="u.username !== user.username" (click)="invite(u.username)" class="invite-btn">
+            Inviter
+        </button>
+    </div>
+</div>
+
+
+<div class="invite-popup" *ngIf="invitation">
+    <p>
+        Invitation de <strong>{{ invitation.from }}</strong>
+    </p>
+
+    <div class="actions">
+        <button class="accept" (click)="accept()">Accepter</button>
+        <button class="refuse" (click)="refuse()">Refuser</button>
+    </div>
+</div>

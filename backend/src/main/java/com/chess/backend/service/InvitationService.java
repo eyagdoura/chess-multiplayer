@@ -7,16 +7,5 @@ import org.springframework.stereotype.Service;
 @Service
 public class InvitationService {
 
-    private final SimpMessagingTemplate messaging;
 
-    public InvitationService(SimpMessagingTemplate messaging) {
-        this.messaging = messaging;
-    }
-
-    public void sendInvitation(Invitation invitation) {
-        messaging.convertAndSend(
-                "/topic/invitations/" + invitation.getTo(),
-                invitation
-        );
-    }
 }

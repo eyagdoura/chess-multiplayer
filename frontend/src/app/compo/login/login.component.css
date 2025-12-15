@@ -1,0 +1,28 @@
+.auth-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    background: var(--card);
+    width: 360px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .1);
+}
+
+.card h1 {
+    margin-bottom: 5px;
+}
+
+.card p {
+    margin-bottom: 20px;
+    color: #475569;
+}
+
+.link {
+    margin-top: 15px;
+    font-size: 14px;
+}
